@@ -2,10 +2,6 @@
 *@plugindesc Create and manipulate variables that hold more than one value (aka object type variables)
 *@author MAKAIROSI
 *
-*@param empty
-*@desc empty
-*@default empty
-*
 *@help
 *================================================================================
 *===========================OBJECT VARIABLES=====================================
