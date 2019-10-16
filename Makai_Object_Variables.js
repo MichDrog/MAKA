@@ -145,11 +145,11 @@ maka.objVar.setProp = function(x, y, z) {
   };
   
   
-  (function(alias) {
+  (function(makai) {
     'use strict';
     
       Window_Base.prototype.convertEscapeCharacters = function(text) {
-        text = alias.call(this, text);
+        text = makai.call(this, text);
         text = text.replace(/\x1bVOBJ\[(\d+):(\d+)\]/gi, function() {
           var x = parseInt(arguments[1]);
           var y = parseInt(arguments[2]);
