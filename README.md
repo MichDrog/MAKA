@@ -1,2 +1,2 @@
-# MAKA
-MAKA plugins are meant for RPGMaker MV
+# Makai
+Makai plugins are meant for RPGMaker MV
