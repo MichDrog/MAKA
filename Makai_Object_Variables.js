@@ -101,10 +101,7 @@
 var maka = maka || {};
 maka.objVar = maka.objVar || {};
 
-(function(){
-  
-
-  maka.objVar.param = PluginManager.parameters("MAKAIROSI_objectVariables");   
+(function(){   
 
     maka.objVar.setupVar = function(x){ 
 
