@@ -134,13 +134,7 @@ maka.objVar.setProp = function(x, y, z) {
     y = y.toLowerCase(); //get 'a' instead of 'A'
     
     $gameVariables.value(x)["" + y + ""] = z;
-//This is the part that i can't get to work
-/*
-    if (typeof $gameVariables.value(x)["" + y + ""] === "undefined"){
-       alert("Oops! Something went wrong with the value " + z + " you gave to variable " + x + ", property " + y +"");
-       alert("The property is now set as 'undefined'");
-    };
-*/
+
     }; 
   };
   
