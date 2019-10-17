@@ -85,27 +85,35 @@
 *----------------------------------------------------------------------------
 *
 *============================================================================
-*                                 SCRIPT CALL                               
+*                                 SCRIPT CALLS                               
 *============================================================================
 *
 *maka.objVar.setProp(x, y, z);
 *
 *Sets a new value to a property of a variable.
 *
-*For -X-
 *x = The ID of the variable whose property's value you want to set or 
-*    change. If the parameter is ON, the name and ID of the variable will 
-*    be stored for future use.
+*    change. If the Store Variable Names parameter is ON, the name and 
+*    ID of the variable will be stored for future use.
 *
-*For -Y-
 *y = The property of the variable whose value you want to set or change. 
 *    If the property doesn't exist, it will be created. Remember, when
 *    typing a name for the property it always has to be in quotes!
 *
-*For -Z-
 *z = The value you want to set to the property of the variable. The value
 *    can be anything (number, string, boolean, etc.), even the value of a
 *    property of another object variable.
+*
+*maka.objVar.getProp(x, y);
+*
+*Gets the value of the property of a variable.
+*
+*x = The ID of the variable whose property's value you want to get. 
+*    If the Store Variable Names parameter is ON, the name of the
+*    variable can be used instead.
+*
+*y = The property of the variable whose value you want to get. 
+*    Remember, the property's name it always has to be in quotes!
 *
 *----------------------------------------------------------------------------
 *
@@ -149,6 +157,7 @@
 *                                 CHANGELOG                                   
 *============================================================================
 *
+*17-10-19: Added a script call for getting the values of set properties
 *17-10-19: Added a parameter for case sensitivity
 *17-10-19: Added a parameter for storing the variable's name
 *16-10-19: Added calling the variable by its user-created name
@@ -170,6 +179,22 @@ maka.objVar = maka.objVar || {};
   
   var variableNames = variableNames || [];
   
+  maka.objVar.getProp = function(x, y) {
+
+    y = caseSensi(y); //property
+
+    if(maka.param.storeName == false){
+    x = Number(x); //id
+
+    } else { 
+
+      x = caseSensi(x);
+      x = Number(calculX(x));
+
+    };
+return $gameVariables.value(x)[""+y+""];
+  };
+
   maka.objVar.setProp = function(x, y, z) {
   
       x = Number(x); //variable ID
