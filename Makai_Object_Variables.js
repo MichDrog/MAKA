@@ -10,6 +10,14 @@
 *YES - true     NO - false
 *@default true
 *
+*@param Case Sensitivity
+*@type boolean
+*@on YES
+*@off NO
+*@desc Do you want names to be case-sensitive?
+*YES - true     NO - false
+*@default true
+*
 *@help
 *============================================================================
 *                                 INTRODUCTION                              
@@ -20,7 +28,7 @@
 *one variable, and call them by their names!
 *
 *============================================================================
-*                                  PARAMETER                                 
+*                                  PARAMETERS                                 
 *============================================================================
 *
 *Store Variable Names: 
@@ -34,6 +42,17 @@
 *
 *I personally prefer to have this on, since it's easier to remember 
 *mark:height and suzan:job than 116:height and 349:job.
+*
+*Case Sensitivity:
+*
+*By default, every string is case-sensitive. By turning this parameter off
+*you can add "HEIGHT" as a property and call it as "HeIgHT". Note that if
+*you also have the first parameter on, the name of the variable will be
+*stored with all its letters turned to lowercase.
+*
+*I personally prefer to have this off, since i usually name my variables
+*weirdly (like "MAXjoy") and i'm not going to remember those. So with this
+*i can just type mark:maxjoy and not care about their proper names.
 *
 *============================================================================
 *                                  TEXT CODE                                 
@@ -127,6 +146,14 @@
 *amazing rpgmaker community.
 *
 *============================================================================
+*                                 CHANGELOG                                   
+*============================================================================
+*
+*17-10-19: Added a parameter for case sensitivity
+*17-10-19: Added a parameter for storing the variable's name
+*16-10-19: Added calling the variable by its user-created name
+*16-10-19: Added creating properties of any name or number
+*16-10-19: Created the original plugin
 */
 //plugin starts here
 
@@ -139,6 +166,7 @@ maka.objVar = maka.objVar || {};
   maka.param = maka.param || {};
   
   maka.param.storeName = eval(String(maka.parameters['Store Variable Names']));
+  maka.param.caseSensi = eval(String(maka.parameters['Case Sensitivity']));
   
   var variableNames = variableNames || [];
   
@@ -181,10 +209,14 @@ maka.objVar = maka.objVar || {};
                     };
                 
                 }; 
-                
-                variableNames.push(""+$dataSystem.variables[x]+"", x); //Generate a new entry in the array! Name, Id
 
-           };
+var nameToStore = ""+$dataSystem.variables[x]+"";
+nameToStore = caseSensi(nameToStore);
+y = caseSensi(y);
+
+                  variableNames.push(nameToStore, x); //Generate a new entry in the array! Name, Id
+           
+              };
 
       $gameVariables.value(x)["" + y + ""] = z;
 
@@ -192,6 +224,8 @@ maka.objVar = maka.objVar || {};
   };
   
   function findVariableId(string){
+
+   string = caseSensi(string);
 
     var IdFound;
     var i;
@@ -227,7 +261,19 @@ maka.objVar = maka.objVar || {};
       return x;
 
   };
-        
+        function caseSensi(funcParam){
+
+          if (maka.param.caseSensi == false){
+                   
+                   if (!isNaN(funcParam) == false){
+      
+                   funcParam = funcParam.toLowerCase();
+                
+                   };
+                   
+        };
+             return funcParam;
+        };
 
   (function(makai) {
 
@@ -238,8 +284,11 @@ maka.objVar = maka.objVar || {};
         text = makai.call(this, text);
         text = text.replace(/\x1bVOBJ\[(.*?):(.*?)\]/gi, function() {
 
-          var x = calculX(arguments[1]);
+          var x = arguments[1];
+          x = caseSensi(x);
+          x = calculX(x);
           var y = arguments[2];
+          y = caseSensi(y);
 
             return $gameVariables.value(x)[""+y+""];
 
