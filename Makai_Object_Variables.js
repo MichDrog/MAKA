@@ -179,6 +179,8 @@ maka.objVar = maka.objVar || {};
   
   var variableNames = variableNames || [];
   
+//======================================SCRIPT CALLS=====================================================//
+
   maka.objVar.getProp = function(x, y) {
 
     y = caseSensi(y); //property
@@ -194,7 +196,7 @@ maka.objVar = maka.objVar || {};
     };
 return $gameVariables.value(x)[""+y+""];
   };
-
+//-----------------------------------------------------------------------------------------------------//
   maka.objVar.setProp = function(x, y, z) {
   
       x = Number(x); //variable ID
@@ -247,7 +249,9 @@ y = caseSensi(y);
 
        };
   };
-  
+
+  //======================================SOME FUNCTIONS=====================================================//
+
   function findVariableId(string){
 
    string = caseSensi(string);
@@ -270,6 +274,8 @@ y = caseSensi(y);
 
   };
 
+//-----------------------------------------------------------------------------------------------------//
+
   function calculX(x){
 
       if (!isNaN(x) == true){
@@ -286,6 +292,9 @@ y = caseSensi(y);
       return x;
 
   };
+
+//-----------------------------------------------------------------------------------------------------//
+
         function caseSensi(funcParam){
 
           if (maka.param.caseSensi == false){
@@ -299,6 +308,8 @@ y = caseSensi(y);
         };
              return funcParam;
         };
+
+//======================================TEXT REPLACER=====================================================//
 
   (function(makai) {
 
