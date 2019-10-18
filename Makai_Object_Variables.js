@@ -85,6 +85,28 @@
 *----------------------------------------------------------------------------
 *
 *============================================================================
+*                                PLUGIN COMMANDS                               
+*============================================================================
+*1. NewVarProp: VariableID PropertyName Value
+*
+*   Does exactly what maka.objVar.setProp(x, y, z) does.
+*
+*   Example: Plugin Command->NewVarProp: 16 height 4
+*   This will set the value of variable 16, property "height" to 4.
+*
+*2. StoreVarProp: VariableID/Name PropertyName StorageVariableID
+*
+*   Stores the value of a variable's property in an another variable.
+*
+*   Example: Plugin Command->StoreVarProp: 16 height 13
+*   This will take the value of variable 16, property "height" and put it in
+*   variable 13.
+*
+*If you did both of these plugin commands, if you type \v[13] in a show text
+*box it will show "4".
+*
+*NOTE: In contrast to the script calls, plugin commands don't need quotes.
+*============================================================================
 *                                 SCRIPT CALLS                               
 *============================================================================
 *
@@ -162,7 +184,9 @@
 *============================================================================
 *                                 CHANGELOG                                   
 *============================================================================
-*
+*18-10-19: Added transfering values from a property to a variable
+*18-10-19: Added Plugin Commands!
+*18-10-19: Name storage now replaces strings instead of deleting them
 *17-10-19: Added a script call for getting the values of set properties
 *17-10-19: Added a parameter for case sensitivity
 *17-10-19: Added a parameter for storing the variable's name
@@ -346,5 +370,22 @@ if(alreadyExists == false){
     }; 
 
   })(Window_Base.prototype.convertEscapeCharacters);
+
+//======================================PLUGIN COMMANDS=====================================================//
+
+var makaPluginCommand = Game_Interpreter.prototype.pluginCommand;
+
+Game_Interpreter.prototype.pluginCommand = function(command, args){
+makaPluginCommand.call(this, command, args);
+
+if (command === 'NewVarProp:'){
+maka.objVar.setProp(args[0], args[1], args[2]);
+};
+
+if (command === 'StoreVarProp:'){
+  $gameVariables.setValue(args[2], maka.objVar.getProp(args[0], args[1]));
+  };
+};
+
 
 })(maka.objVar);
