@@ -115,6 +115,12 @@
 *y = The property of the variable whose value you want to get. 
 *    Remember, the property's name it always has to be in quotes!
 *
+*NOTE: To reset a variable back to a "normal" one, simply assign a
+*      new value to it via "control variables" or the script call
+*      $gameVariables.setValue() of RMMV.
+*
+*IMPORTANT! If you reset an object variable back to a "normal" variable,
+*           all its properties and their values will be deleted!
 *----------------------------------------------------------------------------
 *
 *Examples:
@@ -198,10 +204,15 @@ return $gameVariables.value(x)[""+y+""];
   };
 //-----------------------------------------------------------------------------------------------------//
   maka.objVar.setProp = function(x, y, z) {
-  
+
       x = Number(x); //variable ID
       y; //name number of property
       z; //value to be given
+      
+      var alreadyExists = false;
+      var nameToStore = ""+$dataSystem.variables[x]+"";
+      nameToStore = caseSensi(nameToStore);
+      y = caseSensi(y);
       
       if (x<1 || x>9999){ //check if the id given is valid
   
@@ -227,8 +238,10 @@ return $gameVariables.value(x)[""+y+""];
                         if(Number(variableNames[i]) == Number(x)){
                             
                             i--;
-                            var removedFromArray = variableNames.splice(i,2);
-                            removedFromArray = undefined;
+                            
+                            variableNames[i].replace(""+variableNames[i]+"", ""+nameToStore+"");
+                            alreadyExists = true;
+                            
                             break;
 
                         };
@@ -237,12 +250,10 @@ return $gameVariables.value(x)[""+y+""];
                 
                 }; 
 
-var nameToStore = ""+$dataSystem.variables[x]+"";
-nameToStore = caseSensi(nameToStore);
-y = caseSensi(y);
 
+if(alreadyExists == false){
                   variableNames.push(nameToStore, x); //Generate a new entry in the array! Name, Id
-           
+};
               };
 
       $gameVariables.value(x)["" + y + ""] = z;
