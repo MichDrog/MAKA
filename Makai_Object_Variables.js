@@ -179,6 +179,9 @@
 *
 *If 'y' is an array, this will return the value at its 'i' place.
 * 
+*maka.objVar.getPropLength(x, y):
+* 
+*If 'y' is an array, this will return the length of the array.
 * 
 *----------------------------------------------------------------------------
 *
