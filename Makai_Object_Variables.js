@@ -1,5 +1,5 @@
 /*:
-*@plugindesc Create and manipulate variables that hold more than one value (aka object type variables)
+*@plugindesc v1.2 Create and manipulate variables that hold more than one value (aka object type variables)
 *@author Makai Rosi
 *
 *@param Store Variable Names
@@ -8,7 +8,7 @@
 *@off NO
 *@desc Are you planning on calling variables by name?
 *YES - true     NO - false
-*@default true
+*@default false
 *
 *@param Case Sensitivity
 *@type boolean
@@ -18,6 +18,12 @@
 *YES - true     NO - false
 *@default true
 *
+*@param Name_holding_Variable
+*@type integer
+*@desc Only if 'Store Variable Names' is set to YES
+*Sets a variable that stores the variable names so you can use them 
+*@default 1
+* 
 *@help
 *============================================================================
 *                                 INTRODUCTION                              
@@ -54,6 +60,14 @@
 *weirdly (like "MAXjoy") and i'm not going to remember those. So with this
 *i can just type mark:maxjoy and not care about their proper names.
 *
+*Name_holding_Variable:
+* 
+*If you choose to use "Store Variable Names", you need to specify a 
+* variable which will serve as a name storage. You can't use that variable 
+* for anything else after that! Probably name it "DONT USE" and be done
+* with it :P Since it has a default value, i set the Store Variable Names
+* to off by default.
+* 
 *============================================================================
 *                                  TEXT CODE                                 
 *============================================================================
@@ -143,6 +157,29 @@
 *
 *IMPORTANT! If you reset an object variable back to a "normal" variable,
 *           all its properties and their values will be deleted!
+*           
+*----ARRAYS----Read on if you want an array property
+* 
+* X is always the the Id of the variable that holds the property
+* 
+* Variable Names don't count here (we're talking about arrays)
+* 
+* There's no way to simply show an array in text. Unless you first 
+* store the desired value in a different variable or property.
+* 
+*maka.objVar.setProp(x, y, 'createNewArray'):
+*
+*With this, the new property will be set up as an array.
+* 
+*maka.objVar.pushProp(x, y, z):
+* 
+*If 'y' is an array, z will be 'pushed' into it.
+* 
+*maka.objVar.getProp(x, y)[i]:
+*
+*If 'y' is an array, this will return the value at its 'i' place.
+* 
+* 
 *----------------------------------------------------------------------------
 *
 *Examples:
@@ -184,15 +221,9 @@
 *============================================================================
 *                                 CHANGELOG                                   
 *============================================================================
-*18-10-19: Added transfering values from a property to a variable
-*18-10-19: Added Plugin Commands!
-*18-10-19: Name storage now replaces strings instead of deleting them
-*17-10-19: Added a script call for getting the values of set properties
-*17-10-19: Added a parameter for case sensitivity
-*17-10-19: Added a parameter for storing the variable's name
-*16-10-19: Added calling the variable by its user-created name
-*16-10-19: Added creating properties of any name or number
-*16-10-19: Created the original plugin
+*v1.2: Added array properties and fixed the name storing error!
+*v1.1: Added Plugin Commands!
+*v1.0: Created the original plugin
 */
 //plugin starts here
 
@@ -206,7 +237,13 @@ maka.objVar = maka.objVar || {};
   
   maka.param.storeName = eval(String(maka.parameters['Store Variable Names']));
   maka.param.caseSensi = eval(String(maka.parameters['Case Sensitivity']));
-  
+    
+    if (maka.param.storeName == true) {
+
+        maka.param.storeVar = maka.parameters['Name_holding_Variable'];
+
+    };
+
   var variableNames = variableNames || [];
   
 //======================================SCRIPT CALLS=====================================================//
@@ -227,7 +264,12 @@ maka.objVar = maka.objVar || {};
 return $gameVariables.value(x)[""+y+""];
   };
 //-----------------------------------------------------------------------------------------------------//
-  maka.objVar.setProp = function(x, y, z) {
+    maka.objVar.setProp = function (x, y, z) {
+
+        
+        if (typeof($gameVariables.value(maka.param.storeVar)) === 'object') {
+        variableNames = $gameVariables.value(maka.param.storeVar);
+        };
 
       x = Number(x); //variable ID
       y; //name number of property
@@ -237,6 +279,7 @@ return $gameVariables.value(x)[""+y+""];
       var nameToStore = ""+$dataSystem.variables[x]+"";
       nameToStore = caseSensi(nameToStore);
       y = caseSensi(y);
+      
       
       if (x<1 || x>9999){ //check if the id given is valid
   
@@ -253,17 +296,17 @@ return $gameVariables.value(x)[""+y+""];
        }; //If the variable isn't an object, create it
        
        if (maka.param.storeName == true){
-                
-                if(variableNames.length>0){
+
+           if (variableNames.length>0){
 
                     var i;
-                    for (i=0; i<variableNames.length; i++){
+               for (i = 0; i < variableNames.length; i++){
 
-                        if(Number(variableNames[i]) == Number(x)){
+                   if (Number(variableNames[i]) == Number(x)){
                             
                             i--;
                             
-                            variableNames[i].replace(""+variableNames[i]+"", ""+nameToStore+"");
+                       variableNames[i].replace("" + variableNames[i]+"", ""+nameToStore+"");
                             alreadyExists = true;
                             
                             break;
@@ -273,32 +316,54 @@ return $gameVariables.value(x)[""+y+""];
                     };
                 
                 }; 
-
+           
 
 if(alreadyExists == false){
-                  variableNames.push(nameToStore, x); //Generate a new entry in the array! Name, Id
+    variableNames.push(nameToStore, x); //Generate a new entry in the array! Name, Id
+    
 };
               };
+          if (z != 'createNewArray') {
+              $gameVariables.value(x)["" + y + ""] = z;
+          } else {
+              $gameVariables.value(x)["" + y + ""] = [];
+          };
 
-      $gameVariables.value(x)["" + y + ""] = z;
+        };
 
-       };
-  };
+        $gameVariables.setValue((maka.param.storeVar), variableNames);
+    };
+//-----------------------------------------------------------------------------------------------------//
+    maka.objVar.pushProp = function (x, y, z) {
+        y = caseSensi(y);
+        $gameVariables.value(x)["" + y + ""].push(z);
+        
+    };
+//-----------------------------------------------------------------------------------------------------//
+    maka.objVar.getPropLength = function (x, y) {
+        y = caseSensi(y);
+        return $gameVariables.value(x)["" + y + ""].length;
+
+    };
 
   //======================================SOME FUNCTIONS=====================================================//
 
-  function findVariableId(string){
+    function findVariableId(string) {
+
+        if (typeof($gameVariables.value(maka.param.storeVar)) === 'object') {
+            variableNames = $gameVariables.value(maka.param.storeVar);
+        };
 
    string = caseSensi(string);
 
     var IdFound;
     var i;
-            for (i=0; i < variableNames.length; i++) {
+        for (i = 0; i < variableNames.length; i++) {
                 
-                if(variableNames[i] == string){
+          if (variableNames[i] == string){
 
                 i++;
-                IdFound = Number(variableNames[i]);
+              IdFound = Number(variableNames[i]);
                 break;
 
               };    
@@ -335,9 +400,9 @@ if(alreadyExists == false){
           if (maka.param.caseSensi == false){
                    
                    if (!isNaN(funcParam) == false){
-      
+                        
                    funcParam = funcParam.toLowerCase();
-                
+                       
                    };
                    
         };
