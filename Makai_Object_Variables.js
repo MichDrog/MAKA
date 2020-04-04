@@ -1,14 +1,7 @@
 /*:
-*@plugindesc v1.2 Create and manipulate variables that hold more than one value (aka object type variables)
+*@plugindesc v1.3 Create and manipulate variables that hold more than one value (aka object type variables)
 *@author Makai Rosi
 *
-*@param Store Variable Names
-*@type boolean
-*@on YES
-*@off NO
-*@desc Are you planning on calling variables by name?
-*YES - true     NO - false
-*@default false
 *
 *@param Case Sensitivity
 *@type boolean
@@ -20,9 +13,9 @@
 *
 *@param Name_holding_Variable
 *@type integer
-*@desc Only if 'Store Variable Names' is set to YES
+*@desc Set to 0 to disable
 *Sets a variable that stores the variable names so you can use them 
-*@default 1
+*@default 0
 * 
 *@help
 *============================================================================
@@ -37,19 +30,7 @@
 *                                  PARAMETERS                                 
 *============================================================================
 *
-*Store Variable Names: 
-*
-*This means that the name that you gave the variable will be stored in an
-*array so that you can call it by name in the text code. The reason it's
-*optional is because the names of the variables turned into objects will
-*have to be unique to be called by name. On the other hand, if you leave
-*this on and keep on calling them by their IDs, the only problem is that
-*you will end up with a useless array filled with names and IDs.
-*
-*I personally prefer to have this on, since it's easier to remember 
-*mark:height and suzan:job than 116:height and 349:job.
-*
-*Case Sensitivity:
+*           Case Sensitivity:
 *
 *By default, every string is case-sensitive. By turning this parameter off
 *you can add "HEIGHT" as a property and call it as "HeIgHT". Note that if
@@ -60,37 +41,37 @@
 *weirdly (like "MAXjoy") and i'm not going to remember those. So with this
 *i can just type mark:maxjoy and not care about their proper names.
 *
-*Name_holding_Variable:
+*           Name_holding_Variable:
 * 
-*If you choose to use "Store Variable Names", you need to specify a 
-* variable which will serve as a name storage. You can't use that variable 
-* for anything else after that! Probably name it "DONT USE" and be done
-* with it :P Since it has a default value, i set the Store Variable Names
-* to off by default.
+* If you want to use the variables' names instead of their ids when 
+* calling their values in the text, set this variable to anything above 
+* 0. Name that variable something so that you remember not to touch it!
+* Probably name it "DONT USE" and be done with it :P
+* 
+*I personally prefer to have this on, since it's easier to remember
+*mark:height and suzan:job than 116:height and 349:job.
 * 
 *============================================================================
 *                                  TEXT CODE                                 
 *============================================================================
 *
-*\VOBJ[x:y]
+*           \VOBJ[id:property]
 *
-*x = Variable ID or variable_name (the one you gave it!)
-*(If you want to use names, remember to turn the parameter on!)
+*id = Variable ID or variable_name (the one you gave it!)
+*(If you want to use names, remember to set the name holding variable 
+ * appropriately!)
 *
-*y = the_property's_name
+*property = the property's name
 *
-*Examples: 
-*=/=/=/=/=/=/=/=/=/=/=/=/=/=/=
+*Examples:
+* 
 *\VOBJ[1:2] will show the value of Variable 1, property "2".
 *
-*=/=/=/=/=/=/=/=/=/=/=/=/=/=/=
 *\VOBJ[mark:2] will show the value of the Variable you have named 
 *              "mark"(without the quotes), property "2".
 *
-*=/=/=/=/=/=/=/=/=/=/=/=/=/=/=
 *\VOBJ[1:height] will show the value of Variable 1, property "height".
 *
-*=/=/=/=/=/=/=/=/=/=/=/=/=/=/=
 *\VOBJ[mark:height] will show the value of the Variable named 
 *                   "mark"(without the quotes), property "height".
 *
@@ -124,33 +105,63 @@
 *                                 SCRIPT CALLS                               
 *============================================================================
 *
-*maka.objVar.setProp(x, y, z);
+*              maka.objVar.setProp(id, property, value);
 *
 *Sets a new value to a property of a variable.
 *
-*x = The ID of the variable whose property's value you want to set or 
+*id = The ID of the variable whose property's value you want to set or
 *    change. If the Store Variable Names parameter is ON, the name and 
 *    ID of the variable will be stored for future use.
 *
-*y = The property of the variable whose value you want to set or change. 
+*property = The property of the variable whose value you want to set or change.
 *    If the property doesn't exist, it will be created. Remember, when
 *    typing a name for the property it always has to be in quotes!
 *
-*z = The value you want to set to the property of the variable. The value
+*value = The value you want to set to the property of the variable. The value
 *    can be anything (number, string, boolean, etc.), even the value of a
 *    property of another object variable.
 *
-*maka.objVar.getProp(x, y);
+*              maka.objVar.getProp(x, y);
 *
 *Gets the value of the property of a variable.
 *
-*x = The ID of the variable whose property's value you want to get. 
+*id = The ID of the variable whose property's value you want to get.
 *    If the Store Variable Names parameter is ON, the name of the
 *    variable can be used instead.
 *
-*y = The property of the variable whose value you want to get. 
+*property = The property of the variable whose value you want to get.
 *    Remember, the property's name it always has to be in quotes!
 *
+ *              maka.objVar.changeProp(operation, value, id, property);
+ * 
+ * operation = the mathematical operation you are going to use.
+ *
+ * operations supported:
+ * 'add' = addition
+ * 'sub' = subtraction
+ * 'mul' = multiplication
+ * 'div' = division (result is rounded)
+ * 'mod' = modulo
+ *
+ * value = the value to be placed after the operation.
+ *
+ * for example if you want to increase the property by 1,
+ * then the operation is 'add' and the value is 1.
+ *
+ * id = the id of the variable that holds the property
+ *
+ * property = the name of the property held
+ * 
+ * For example if you wanted to add 1 to the property 'salt' of
+ * variable 32, you would use:
+ * 
+ * maka.objVar.changeProp('add', 1, 32, 'salt');
+ * 
+ * And if you wanted to subtract 2 from the same property:
+ * 
+ * maka.objVar.changeProp('sub', 2, 32, 'salt');
+ * 
+ * 
 *NOTE: To reset a variable back to a "normal" one, simply assign a
 *      new value to it via "control variables" or the script call
 *      $gameVariables.setValue() of RMMV.
@@ -167,47 +178,47 @@
 * There's no way to simply show an array in text. Unless you first 
 * store the desired value in a different variable or property.
 * 
-*maka.objVar.setProp(x, y, 'createNewArray'):
+*              maka.objVar.setProp(x, y, 'createNewArray'):
 *
 *With this, the new property will be set up as an array.
 * 
-*maka.objVar.pushProp(x, y, z):
+*              maka.objVar.pushProp(x, y, z):
 * 
 *If 'y' is an array, z will be 'pushed' into it.
 * 
-*maka.objVar.getProp(x, y)[i]:
+*              maka.objVar.getProp(x, y)[i]:
 *
 *If 'y' is an array, this will return the value at its 'i' place.
 * 
-*maka.objVar.getPropLength(x, y):
+*              maka.objVar.getPropLength(x, y):
 * 
 *If 'y' is an array, this will return the length of the array.
 * 
 *----------------------------------------------------------------------------
 *
 *Examples:
-*=/=/=/=/=/=/=/=/=/=/=/=/=/=/=
+*
 *maka.objVar.setProp(1, 1, 4); 
 *-
 *->Property 'a' now holds the value 4
 *->You can show it by typing \VOBJ[1:1]
 *
-*=/=/=/=/=/=/=/=/=/=/=/=/=/=/=
-*(Parameter ON, Variable Named "Mark" by the user:)
+*
+*(name holding variable set to a valid id, Variable Named "Mark" by the user:)
 *
 *maka.objVar.setProp(1, 2, $gameVariables.value(1).a); 
 *-
 *->Property 'b' now holds the value of property 'a'
 *->You can show it by typing \VOBJ[Mark:1]
 *
-*=/=/=/=/=/=/=/=/=/=/=/=/=/=/=
+*
 *maka.objVar.setProp(1, "three", true);
 *-
 *->Property 'three' now holds the true boolean expression
 *->You can show it by typing \VOBJ[1:three]
 *
-*=/=/=/=/=/=/=/=/=/=/=/=/=/=/=
-*(Parameter ON, Variable Named "Suzan" by the user:)
+*
+*(name holding variable set to a valid id, Variable Named "Suzan" by the user:)
 *
 *maka.objVar.setProp(1, "job", "blacksmith");
 *-
@@ -238,14 +249,8 @@ maka.objVar = maka.objVar || {};
   maka.parameters = PluginManager.parameters('Makai_Object_Variables');
   maka.param = maka.param || {};
   
-  maka.param.storeName = eval(String(maka.parameters['Store Variable Names']));
   maka.param.caseSensi = eval(String(maka.parameters['Case Sensitivity']));
-    
-    if (maka.param.storeName == true) {
-
-        maka.param.storeVar = maka.parameters['Name_holding_Variable'];
-
-    };
+  maka.param.storeVar = Number(maka.parameters['Name_holding_Variable']);
 
   var variableNames = variableNames || [];
   
@@ -255,7 +260,7 @@ maka.objVar = maka.objVar || {};
 
     y = caseSensi(y); //property
 
-    if(maka.param.storeName == false){
+    if(maka.param.storeVar<=0){
     x = Number(x); //id
 
     } else { 
@@ -269,9 +274,10 @@ return $gameVariables.value(x)[""+y+""];
 //-----------------------------------------------------------------------------------------------------//
     maka.objVar.setProp = function (x, y, z) {
 
-        
-        if (typeof($gameVariables.value(maka.param.storeVar)) === 'object') {
-        variableNames = $gameVariables.value(maka.param.storeVar);
+        if (maka.param.storeVar > 0) {
+            if (typeof $gameVariables.value(maka.param.storeVar) === 'object') {
+                variableNames = $gameVariables.value(maka.param.storeVar);
+            };
         };
 
       x = Number(x); //variable ID
@@ -298,7 +304,7 @@ return $gameVariables.value(x)[""+y+""];
 
        }; //If the variable isn't an object, create it
        
-       if (maka.param.storeName == true){
+          if (maka.param.storeVar > 0){
 
            if (variableNames.length>0){
 
@@ -333,8 +339,9 @@ if(alreadyExists == false){
           };
 
         };
-
-        $gameVariables.setValue((maka.param.storeVar), variableNames);
+        if (maka.param.storeVar > 0) {
+            $gameVariables.setValue((maka.param.storeVar), variableNames);
+        };
     };
 //-----------------------------------------------------------------------------------------------------//
     maka.objVar.pushProp = function (x, y, z) {
@@ -342,6 +349,22 @@ if(alreadyExists == false){
         $gameVariables.value(x)["" + y + ""].push(z);
         
     };
+
+//-----------------------------------------------------------------------------------------------------//
+    maka.objVar.changeProp = function (operation, value, id, property) {
+
+        switch (operation) {
+
+            case 'add': this.setProp(id, property, this.getProp(id, property) + value); break;
+            case 'sub': this.setProp(id, property, this.getProp(id, property) - value); break; 
+            case 'div': this.setProp(id, property, Math.round(this.getProp(id, property) / value)); break; 
+            case 'mul': this.setProp(id, property, this.getProp(id, property) * value); break;
+            case 'mod': this.setProp(id, property, this.getProp(id, property) % value); break;
+        };
+
+    };
+
+
 //-----------------------------------------------------------------------------------------------------//
     maka.objVar.getPropLength = function (x, y) {
         y = caseSensi(y);
@@ -352,11 +375,11 @@ if(alreadyExists == false){
   //======================================SOME FUNCTIONS=====================================================//
 
     function findVariableId(string) {
-
-        if (typeof($gameVariables.value(maka.param.storeVar)) === 'object') {
-            variableNames = $gameVariables.value(maka.param.storeVar);
+        if (maka.param.storeVar > 0) {
+            if (typeof $gameVariables.value(maka.param.storeVar) === 'object') {
+                variableNames = $gameVariables.value(maka.param.storeVar);
+            };
         };
-
    string = caseSensi(string);
 
     var IdFound;
