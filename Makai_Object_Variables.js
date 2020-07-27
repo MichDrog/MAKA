@@ -1,5 +1,5 @@
 /*:
-*@plugindesc v1.3 Create and manipulate variables that hold more than one value (aka object type variables)
+*@plugindesc v1.3b Create and manipulate variables that hold more than one value (aka object type variables)
 *@author Makai Rosi
 *
 *
@@ -235,6 +235,7 @@
 *============================================================================
 *                                 CHANGELOG                                   
 *============================================================================
+*v1.3b: Bugfixes
 *v1.2: Added array properties and fixed the name storing error!
 *v1.1: Added Plugin Commands!
 *v1.0: Created the original plugin
@@ -470,6 +471,7 @@ Game_Interpreter.prototype.pluginCommand = function(command, args){
 makaPluginCommand.call(this, command, args);
 
 if (command === 'NewVarProp:'){
+if (args[2] == Number(args[2]))args[2] = Number(args[2]);
 maka.objVar.setProp(args[0], args[1], args[2]);
 };
 
