@@ -126,6 +126,8 @@
  * //                 SCRIPT CALLS
  * //===================================================//
  * 
+ * These script calls are completely optional. Only use them if you have to.
+ *
  * maka.gstocks.isStockItem(itemId)
  * --------------------------------
  * Returns true if the item with this id is an item affected by stocks.
