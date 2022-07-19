@@ -123,6 +123,46 @@
  * turn the text red. Type 0 for white.
  * 
  * //===================================================//
+ * //                 SCRIPT CALLS
+ * //===================================================//
+ * 
+ * maka.gstocks.isStockItem(itemId)
+ * --------------------------------
+ * Returns true if the item with this id is an item affected by stocks.
+ * Returns false otherwise.
+ * 
+ * The following script calls only work if the item is a stock item
+ * (has a stocks note). So run them along with "isStockItem" function.
+ * 
+ * maka.gstocks.hasBoughtNu(itemId)
+ * --------------------------------
+ * Returns the number of items with this id that the player has bought.
+ * 
+ * maka.gstocks.hasBoughtMax(itemId)
+ * --------------------------------
+ * Returns true if the item with this id has been bought the max number 
+ * of times (is out of stock).
+ * Returns false otherwise.
+ * 
+ * maka.gstocks.addBoughtItem(itemId)
+ * --------------------------------
+ * Adds 1 to the bought items with this id. Useful if you want to manually 
+ * give an item to the player, but still lower its stock.
+ * 
+ * maka.gstocks.getItemStock(itemId)
+ * --------------------------------
+ * Returns the stock that the item with this id currently has.
+ * 
+ * maka.gstocks.resetBought(itemId)
+ * --------------------------------
+ * Resets the how many items with this id the player has bought to 0.
+ * Useful when resetting a stock per time/days passed.
+ *
+ * maka.gstocks.resetAll()
+ * -----------------------
+ * Does the same as "resetBought" but for all stock items.
+ * 
+ * //===================================================//
  * //                 COMPATIBILITY
  * //===================================================//
  * 
@@ -324,4 +364,12 @@ Game_Party.prototype.maxItems = function (item) {
         }
     }
 
+    maka.gstocks.resetBought = function (id) {
+        this.setup(id);
+        $gameSystem.boughtItemIDs[id].number = 0;
+    }
+
+    maka.gstocks.resetAll = function () {
+        $gameSystem.boughtItemIDs = {};
+    }
 })(maka.gstocks);
