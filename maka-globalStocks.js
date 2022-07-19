@@ -165,7 +165,7 @@ maka.param = maka.param || {};
 maka.param.hideItems = eval(String(maka.parameters['Hide Max-bought Items']));
 maka.param.displayMaxItems = eval(String(maka.parameters['Display Max Items']));
 maka.param.maxItemsMessage = String(maka.parameters['Max-bought Items Message']);
-maka.param.maxMessageColor = parseInt(String(maka.parameters['Max-bought Items Message Color']));
+maka.param.maxMessageColor = parseInt(String(maka.parameters['Max-bought Message Color']));
 
 maka.SCENESHOP_DOBUY = Scene_Shop.prototype.doBuy;
 Scene_Shop.prototype.doBuy = function (number) {
