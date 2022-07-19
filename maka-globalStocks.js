@@ -251,8 +251,8 @@ Game_Party.prototype.maxItems = function (item) {
     maka.gstocks.removeMax = function (shopGoods) {
         for (let i = 0; i < shopGoods.length; i++) {
             let id = shopGoods[i][1];
-            if (maka.gstocks.isStockItem(id) &&
-                maka.gstocks.hasBoughtMax(id)) {
+            if (this.isStockItem(id) &&
+                this.hasBoughtMax(id)) {
                 shopGoods.splice(i, 1);
                 i--;
             }
