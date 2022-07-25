@@ -1,6 +1,6 @@
 /*:
  * @plugindesc Setup global stocks for shop items
- * Version 1.0
+ * Version 1.1
  * @author Makai Rosi
  *
  * @param Display Max Items
@@ -192,6 +192,13 @@
  * - Setup a season or period during which certain items are out of stock
  * - Add stock when the player clears an area (for example a sawmill)
  * etc.
+ * 
+ * //===================================================//
+ * //                 CHANGELOG
+ * //===================================================//
+ * 
+ * v1.1 - Updated compatibility with MZ
+ * v1.0 - First release
  * 
  */
 //plugin starts here
