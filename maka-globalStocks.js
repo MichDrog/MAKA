@@ -126,8 +126,6 @@
  * //                 SCRIPT CALLS
  * //===================================================//
  * 
- * These script calls are completely optional. Only use them if you have to.
- *
  * maka.gstocks.isStockItem(itemId)
  * --------------------------------
  * Returns true if the item with this id is an item affected by stocks.
@@ -207,7 +205,7 @@ maka.param = maka.param || {};
 maka.param.hideItems = eval(String(maka.parameters['Hide Max-bought Items']));
 maka.param.displayMaxItems = eval(String(maka.parameters['Display Max Items']));
 maka.param.maxItemsMessage = String(maka.parameters['Max-bought Items Message']);
-maka.param.maxMessageColor = parseInt(String(maka.parameters['Max-bought Message Color']));
+maka.param.maxMessageColor = parseInt(maka.parameters['Max-bought Message Color']);
 
 maka.SCENESHOP_DOBUY = Scene_Shop.prototype.doBuy;
 Scene_Shop.prototype.doBuy = function (number) {
@@ -220,22 +218,6 @@ Scene_Shop.prototype.doBuy = function (number) {
         };
 
         if (maka.param.hideItems) this._buyWindow._shopGoods = maka.gstocks.removeMax(this._buyWindow._shopGoods);
-    }
-};
-
-maka.WINDOWSHOPBUY_INITIALIZE = Window_ShopBuy.prototype.initialize;
-Window_ShopBuy.prototype.initialize = function (x, y, height, shopGoods) {
-    if (maka.param.hideItems) shopGoods = maka.gstocks.removeMax(shopGoods);
-    maka.WINDOWSHOPBUY_INITIALIZE.call(this, x, y, height, shopGoods);
-};
-
-maka.WINDOWSHOPBUY_DRAWITEMNAME = Window_ShopBuy.prototype.drawItemName;
-Window_ShopBuy.prototype.drawItemName = function (item, x, y, width) {
-    maka.WINDOWSHOPBUY_DRAWITEMNAME.call(this, item, x, y, width);
-    if (maka.gstocks.isStockItem(item.id) && maka.gstocks.hasBoughtMax(item.id)){
-        this.changeTextColor(this.textColor(maka.param.maxMessageColor));
-        this.drawText(maka.param.maxItemsMessage, x, y, width, 'center');
-        this.changeTextColor(this.normalColor());
     }
 };
 
@@ -257,24 +239,6 @@ Scene_Shop.prototype.maxBuy = function () {
     else return maka.SCENESHOP_MAXBUY.call(this);
 };
 
-maka.WINDOWSHOPNUMBER_DRAWNUMBER = Window_ShopNumber.prototype.drawNumber;
-Window_ShopNumber.prototype.drawNumber = function () {
-    if (maka.gstocks.isStockItem(this._item.id)) {
-        var x = this.cursorX();
-        var y = this.itemY();
-        var width = this.cursorWidth() - this.textPadding();
-        this.resetTextColor();
-
-        let additionalText = ``;
-        let boughtItems = $gameSystem.boughtItemIDs[this._item.id].number;
-
-        if (maka.param.displayMaxItems) additionalText = `/${maka.gstocks.getItemStock(this._item.id) - boughtItems}`;
-
-        this.drawText(this._number + additionalText, x, y, width, 'right');
-    }
-    else maka.WINDOWSHOPNUMBER_DRAWNUMBER.call(this);
-};
-
 maka.GAMEPARTY_MAXITEMS = Game_Party.prototype.maxItems;
 Game_Party.prototype.maxItems = function (item) {
     let max = maka.GAMEPARTY_MAXITEMS.call(this, item);
@@ -283,6 +247,70 @@ Game_Party.prototype.maxItems = function (item) {
         max = maka.gstocks.getItemStock(item.id);
     return max;
 };
+
+maka.WINDOWSHOPBUY_DRAWITEMNAME = Window_ShopBuy.prototype.drawItemName;
+Window_ShopBuy.prototype.drawItemName = function (item, x, y, width) {
+    maka.WINDOWSHOPBUY_DRAWITEMNAME.call(this, item, x, y, width);
+    if (maka.gstocks.isStockItem(item.id) && maka.gstocks.hasBoughtMax(item.id)) {
+        this.changeTextColor(ColorManager.textColor(maka.param.maxMessageColor));
+        this.drawText(maka.param.maxItemsMessage, x, y, width, 'center');
+        this.changeTextColor(ColorManager.normalColor());
+    }
+};
+
+if (Utils.RPGMAKER_NAME == 'MV') {
+
+    maka.WINDOWSHOPBUY_INITIALIZE = Window_ShopBuy.prototype.initialize;
+    Window_ShopBuy.prototype.initialize = function (x, y, height, shopGoods) {
+        if (maka.param.hideItems) shopGoods = maka.gstocks.removeMax(shopGoods);
+        maka.WINDOWSHOPBUY_INITIALIZE.call(this, x, y, height, shopGoods);
+    };
+
+    maka.WINDOWSHOPNUMBER_DRAWNUMBER = Window_ShopNumber.prototype.drawNumber;
+    Window_ShopNumber.prototype.drawNumber = function () {
+        if (maka.gstocks.isStockItem(this._item.id)) {
+            var x = this.cursorX();
+            var y = this.itemY();
+            var width = this.cursorWidth() - this.textPadding();
+            this.resetTextColor();
+
+            let additionalText = ``;
+            let boughtItems = $gameSystem.boughtItemIDs[this._item.id].number;
+
+            if (maka.param.displayMaxItems) additionalText = `/${maka.gstocks.getItemStock(this._item.id) - boughtItems}`;
+
+            this.drawText(this._number + additionalText, x, y, width, 'right');
+        }
+        else maka.WINDOWSHOPNUMBER_DRAWNUMBER.call(this);
+    };
+
+} else if (Utils.RPGMAKER_NAME == 'MZ') {
+
+    maka.WINDOWSHOPBUY_SETUPGOODS = Window_ShopBuy.prototype.setupGoods;
+    Window_ShopBuy.prototype.setupGoods = function (shopGoods) {
+        if (maka.param.hideItems) shopGoods = maka.gstocks.removeMax(shopGoods);
+        maka.WINDOWSHOPBUY_SETUPGOODS.call(this, shopGoods);
+    };
+
+    maka.WINDOWSHOPNUMBER_DRAWNUMBER = Window_ShopNumber.prototype.drawNumber;
+    Window_ShopNumber.prototype.drawNumber = function () {
+        if (maka.gstocks.isStockItem(this._item.id)) {
+            const x = this.cursorX();
+            const y = this.itemNameY();
+            const width = this.cursorWidth() - this.itemPadding();
+            this.resetTextColor();
+
+            let additionalText = ``;
+            let boughtItems = $gameSystem.boughtItemIDs[this._item.id].number;
+
+            if (maka.param.displayMaxItems) additionalText = `/${maka.gstocks.getItemStock(this._item.id) - boughtItems}`;
+
+            this.drawText(this._number + additionalText, x, y, width, 'right');
+        }
+        else maka.WINDOWSHOPNUMBER_DRAWNUMBER.call(this);
+    };
+
+}
 
 (function () {
 
@@ -374,4 +402,5 @@ Game_Party.prototype.maxItems = function (item) {
     maka.gstocks.resetAll = function () {
         $gameSystem.boughtItemIDs = {};
     }
+
 })(maka.gstocks);
